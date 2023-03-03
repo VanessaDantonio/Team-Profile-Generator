@@ -1,0 +1,23 @@
+{
+  "name": "team-profile-generator",
+  "version": "1.0.0",
+  "description": "Command-line application that dynamically generates an HTML webpage with information about each employee of a software engineering team.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VanessaDantonio/Team-Profile-Generator.git"
+  },
+  "author": "Vanessa D'Antonio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VanessaDantonio/Team-Profile-Generator/issues"
+  },
+  "homepage": "https://github.com/VanessaDantonio/Team-Profile-Generator#readme",
+  "dependencies": {
+    "inquirer": "^9.1.4",
+    "jest": "^29.4.3"
+  }
+}
