@@ -1,6 +1,3 @@
-const OUTPUT_DIR = path.resolve(__dirname, "output");
-const outputPath = path.join(OUTPUT_DIR, "team.html");
-
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
@@ -9,38 +6,57 @@ const fs = require("fs");
 const inquirer = require("inquirer");
 const path = require("path");
 
+const OUTPUT_DIR = path.resolve(__dirname, "output");
+const outputPath = path.join(OUTPUT_DIR, "team.html");
+
 const render = require("./src/page-template.js");
 
 const teamArray = [];
+
+const initApp = () => {
+  addEmployee();
+}
 
 const addEngineer = () => {
   inquirer.prompt ([
     {
       type: "input",
       message: "Please enter the engineer's name.",
-      name: "name",
+      name: "engineerName",
     },
     {
       type: "input",
       message: "Please enter the engineer's ID.",
-      name: "id",
+      name: "engineerId",
     },
     {
       type: "input",
       message: "Please enter the engineer's email.",
-      name: "email",
+      name: "engineerEmail",
     },
     {
       type: "input",
-      message: "Please enter the engineer's GitHub page.",
-      name: "github",
+      message: "Please enter the engineer's GitHub username.",
+      name: "engineerGithub",
+    },
+    {
+      type: "confirm",
+      message: "Would you like to add a new team member?",
+      name: "addTeamMember"
     }
   ])
-    .then(engineerInput => {
-      const { name, id, email, github } = engineerInput;
-      const engineer = newEngineer (name, id, email, github);
+    .then(answers => {
+      const engineer = new Engineer (answers.engineerName, answers.engineerId, answers.engineerEmail, answers.engineerGithub);
   
-      teamArray = push(engineer);
+      teamArray.push(engineer);
+      console.log(teamArray);
+
+      if(answers.addTeamMember) {
+        addEmployee();
+      } else {
+        teamArray;
+        createFile();
+      }
     })
 };
   
@@ -49,29 +65,41 @@ const addIntern = () => {
     {
       type: "input",
       message: "Please enter the intern's name.",
-      name: "name",
+      name: "internName",
     },
     {
       type: "input",
       message: "Please enter the intern's ID.",
-      name: "id",
+      name: "internId",
     },
     {
       type: "input",
       message: "Please enter the intern's email.",
-      name: "email",
+      name: "internEmail",
     },
     {
       type: "input",
       message: "Please enter the intern's school.",
-      name: "school",
+      name: "internSchool",
+    },
+    {
+      type: "confirm",
+      message: "Would you like to add a new team member?",
+      name: "addTeamMember"
     }
   ])
-    .then(internInput => {
-      const { name, id, email, school } = internInput;
-      const intern = newIntern (name, id, email, school);
+    .then(answers => {
+      const intern = new Intern (answers.internName, answers.internId, answers.internEmail, answers.internSchool);
 
-      teamArray = push(intern);
+      teamArray.push(intern);
+      console.log(teamArray);
+
+      if(answers.addTeamMember) {
+        addEmployee();
+      } else {
+        teamArray;
+        createFile();
+      }
     })
 };
 
@@ -80,29 +108,41 @@ const addManager = () => {
     {
       type: "input",
       message: "Please enter the manager's name.",
-      name: "name",
+      name: "managerName",
     },
     {
       type: "input",
       message: "Please enter the manager's ID.",
-      name: "id",
+      name: "managerId",
     },
     {
       type: "input",
       message: "Please enter the manager's email.",
-      name: "email",
+      name: "managerEmail",
     },
     {
       type: "input",
       message: "Please enter the manager's office number",
-      name: "officeNumber",
+      name: "managerOfficeNumber",
+    },
+    {
+      type: "confirm",
+      message: "Would you like to add a new team member?",
+      name: "addTeamMember"
     }
   ])
-    .then(managerInput => {
-      const { name, id, email, officeNumber } = managerInput;
-      const manager = newManager (name, id, email, officeNumber);
+    .then(answers => {
+      const manager = new Manager (answers.managerName, answers.managerId, answers.managerEmail, answers.managerOfficeNumber);
 
-      teamArray = push(manager);
+      teamArray.push(manager);
+      console.log(teamArray);
+
+      if(answers.addTeamMember) {
+        addEmployee();
+      } else {
+        teamArray;
+        createFile();
+      }
     })
 };
 
@@ -114,28 +154,23 @@ const addEmployee = () => {
       name: "role",
       choices: [ "Engineer", "Intern", "Manager" ]
     }])
-      .then(employeeData => {
-        const { name, id, role, email, officeNumber, github, school } = employeeData;
-        const employee;
-        if (role === "Engineer") {
-          employee = new Engineer (name, id, email, github);
-          addEmployee();
-        } else if (role === "Intern") {
-          employee = new Intern (name, id, email, school);
+      .then(answer => {
+        if (answer.role === "Engineer") {
+          addEngineer();
+        } else if (answer.role === "Intern") {
           addIntern();
-        } else (role === "Manager") {
-          employee = new Manager (name, id, email, officeNumber);
+        } else if (answer.role === "Manager") {
           addManager();
         }
       });
 }
 
-const confirmAddMember = () => {
-  inquirer.prompt ([
-    {
-      type: "confirm",
-      message: "Would you like to add a new team member?",
-      name: "addTeamMember"
-    }
-  ])
-}
+const createFile = () => {
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR);
+  } else {
+    fs.writeFileSync(outputPath, render(teamArray), "UTF-8");
+  }
+}; 
+
+initApp();
